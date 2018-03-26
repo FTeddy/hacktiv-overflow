@@ -16,8 +16,11 @@ function hash (req, res, next) {
 }
 
 function check (req, res, next) {
+  console.log('checking hash...');
   const hash = req.dbHash
-  const password = req.body.passord
+  console.log(hash);
+  const password = req.body.password
+  console.log(password);
   bcrypt.compare(password, hash)
     .then(function(response) {
     if (response === true) {

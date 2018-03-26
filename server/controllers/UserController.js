@@ -8,13 +8,13 @@ module.exports = {
       .then(foundUser => {
         if (foundUser) {
           return res.status(409).json({
-            message: 'The email is already used. Please  choose another email.'
+            message: 'The email is already used. Please choose another email.'
           })
         }
         let newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          passord: req.hash
+          password: req.hash
         })
         newUser.save((err, createdUser) => {
           if (err) {
@@ -33,11 +33,13 @@ module.exports = {
       })
   },
 
-  getUserData (req, res next) {
+  getUserData (req, res, next) {
+    console.log('getting user data...');
+    console.log(req.body);
     User.findOne({
       email: req.body.email
     }).then(foundUser => {
-      if (foundUser) {
+      if (!foundUser) {
         return res.status(404).json({
           message: 'No User with this email is found'
         })
@@ -53,11 +55,11 @@ module.exports = {
     })
   },
 
-  confirmSignIn (req, res) [
+  confirmSignIn (req, res) {
     res.status(200).json({
       message: 'login succesful',
       token: req.token,
       userId: req.userId
     })
-  ]
+  }
 };

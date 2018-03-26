@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {}
+const {createNewAnswer, getAnswer, editAnswer, deleteAnswer} = require('../controllers/AnswerController.js')
 const JWT = require('../middleware/jwt.js');
 
 // /answer

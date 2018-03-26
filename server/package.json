@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "node getEnv",
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "@google-cloud/storage": "^1.6.0",

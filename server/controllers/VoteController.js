@@ -10,7 +10,7 @@ module.exports = {
 
     let newThreadVote = new ThreadVote({
       value: val,
-      userId: userId
+      userId: userId,
       threadId: threadId
     })
 
@@ -82,7 +82,7 @@ module.exports = {
 
     let newAnswerVote = new AnswerVote({
       value: val,
-      userId: userId
+      userId: userId,
       answerId: answerId
     })
 
