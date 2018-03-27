@@ -36,7 +36,7 @@
     </article>
 
     <!-- Answers -->
-    <div class="container ml-1 divider" v-for="(answer, index) in answers" :key="index">
+    <div class=" ml-1 divider" v-for="(answer, index) in answers" :key="index">
 
       <article class="media bordering">
         <figure class="media-left has-text-centered">
@@ -77,7 +77,7 @@
       </div>
 
     </div>
-    
+
   </div>
 </template>
 

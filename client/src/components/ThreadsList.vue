@@ -24,12 +24,13 @@
 
           </div>
           <div class="media-right">
-              <div class="level-item">
-                {{thread.answerId.length}}
-              </div>
-              <div class="level-item">
-                <p>Answers</p>
-              </div>
+            <p class="level-item"></p>
+            <div class="level-item">
+              {{thread.answerId.length}}
+            </div>
+            <div class="level-item">
+              <p>Answers</p>
+            </div>
           </div>
         </article>
       </div>
