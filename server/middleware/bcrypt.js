@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 
 function hash (req, res, next) {
+  console.log('hashing...');
   const password = req.body.password
   bcrypt.hash(password, saltRounds, function(err, hash) {
     if (err) {
@@ -18,9 +19,9 @@ function hash (req, res, next) {
 function check (req, res, next) {
   console.log('checking hash...');
   const hash = req.dbHash
-  console.log(hash);
+  // console.log(hash);
   const password = req.body.password
-  console.log(password);
+  // console.log(password);
   bcrypt.compare(password, hash)
     .then(function(response) {
     if (response === true) {

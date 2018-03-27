@@ -10,15 +10,10 @@ let transporter = nodemailer.createTransport({
   }
 })
 
-// {
-//  title: `Your question has been answered by ${foundUser.name}`,
-//  to: foundThread.userId.email,
-//  template: 'reminder-email'
-// }
-console.log('before');
+console.log('starting Cron');
 new CronJob('* * */1 * * *', function() {
   //execute kue emailing
-  console.log('hello');
+  console.log('delivering your mails... (〃＾▽＾〃)');
   queue.process('email', 10, function(job, done) {
     let payload = job.data
 
