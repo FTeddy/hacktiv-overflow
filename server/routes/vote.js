@@ -6,14 +6,14 @@ const JWT = require('../middleware/jwt.js');
 // /vote
 // jwt ahs username, email
 // threads
-router.post('/vote/:threadId/:userId/:voteVal', JWT.authJWT, threadVote)
-router.delete('unvote/:threadId/:userId', JWT.authJWT, deleteThreadVote)
-router.get('/:threadId', getThreadVote)
+router.post('/thread/:threadId/:userId/:voteVal', JWT.authJWT, threadVote)
+router.delete('/thread/:threadId/:userId', JWT.authJWT, deleteThreadVote)
+router.get('/thread/:threadId', getThreadVote)
 
 // answers
-router.post('/vote/:answerId/:voteVal', JWT.authJWT, AnswerVote)
-router.delete('unvote/:answerId/:userId', JWT.authJWT, deleteAnswerVote)
-router.get('/:answerId', getAnswerVote)
+router.post('/answer/:answerId/:userId/:voteVal', JWT.authJWT, AnswerVote)
+router.delete('/answer/:answerId/:userId', JWT.authJWT, deleteAnswerVote)
+router.get('/answer/:answerId', getAnswerVote)
 
 
 module.exports = router;

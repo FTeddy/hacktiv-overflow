@@ -18,11 +18,11 @@
     <!-- thread desc -->
     <article class="media divider bordering">
       <figure class="media-left has-text-centered">
-        <a class="level-item">
+        <a class="level-item" v-on:click="voteUpThread(thread.threadVoteId)">
           <span class="icon is-small"><i class="fas fa-sort-up"></i></span>
         </a>
         {{voteThread}}
-        <a class="level-item">
+        <a class="level-item" v-on:click="voteDownThread(thread.threadVoteId)">
           <span class="icon is-small"><i class="fas fa-sort-down"></i></span>
         </a>
       </figure>
@@ -40,11 +40,11 @@
 
       <article class="media bordering">
         <figure class="media-left has-text-centered">
-          <a class="level-item">
+          <a class="level-item" v-on:click="voteUpAnswer(answer)">
             <span class="icon is-small"><i class="fas fa-sort-up"></i></span>
           </a>
-          {{answer.answerVoteId.length}}
-          <a class="level-item">
+          {{voteAnswer(answer)}}
+          <a class="level-item" v-on:click="voteDownAnswer(answer)">
             <span class="icon is-small"><i class="fas fa-sort-down"></i></span>
           </a>
         </figure>
@@ -59,13 +59,12 @@
       </article>
 
     </div>
-
     <!-- new answer form -->
-    <div class="container divider divider-b">
+    <div class="container form-padding">
 
       <div class="">
         <div class="field">
-          <label class="label">Anwer question</label>
+          <label class="label">Answer question</label>
           <input v-model="newPost.answer" class="input" type="text" placeholder="Give your answer!">
         </div>
         <div class="field is-grouped is-grouped-right">
@@ -78,7 +77,7 @@
       </div>
 
     </div>
-
+    
   </div>
 </template>
 
@@ -112,19 +111,32 @@ export default {
       'jwt', 'userId'
     ]),
     voteThread () {
-      return this.thread.threadVoteId.length
+      let total = 0
+      this.thread.threadVoteId.forEach(vote => {
+        total += vote.value
+      })
+      return total
     }
   },
   methods: {
+    voteAnswer (answer) {
+      let total = 0
+      answer.answerVoteId.forEach(vote => {
+        total += vote.value
+      })
+      // console.log(answer)
+      // console.log(total)
+      return total
+    },
     getThread () {
-      console.log(this.$route.params.threadId)
+      // console.log(this.$route.params.threadId)
       this.baseAxios.get(`thread/${this.$route.params.threadId}`)
         .then(serverRes => {
           this.thread = serverRes.data.thread
         })
     },
     getAnswer () {
-      console.log(this.$route.params.threadId)
+      // console.log(this.$route.params.threadId)
       this.baseAxios.get(`answer/${this.$route.params.threadId}`)
         .then(serverRes => {
           this.answers = serverRes.data.answers
@@ -138,6 +150,102 @@ export default {
       this.baseAxios.post(`answer/new/${this.$route.params.threadId}/${this.userId}`, answerData, {headers: {token: this.jwt}})
         .then(serverRes => {
           console.log(serverRes)
+        })
+    },
+    voteUpThread (votes) {
+      if (this.jwt === '') {
+        return console.log('please log in')
+      }
+      console.log(votes)
+      let ownVote = votes.filter(vote => vote.userId === this.userId)
+      console.log(ownVote)
+
+      if (ownVote.length > 0) {
+        this.baseAxios.delete(`vote/thread/${this.$route.params.threadId}/${this.userId}`, {headers: {token: this.jwt}})
+          .then(serverRes => {
+            // console.log(serverRes)
+            this.getThread()
+          })
+        return console.log('already voted')
+      }
+
+      this.baseAxios.post(`vote/thread/${this.$route.params.threadId}/${this.userId}/1`, {}, {headers: {token: this.jwt}})
+        .then(serverRes => {
+          // console.log(serverRes)
+          this.getThread()
+        })
+    },
+    voteDownThread (votes) {
+      if (this.jwt === '') {
+        return console.log('please log in')
+      }
+      let ownVote = votes.filter(vote => vote.userId === this.userId)
+
+      if (ownVote.length > 0) {
+        this.baseAxios.delete(`vote/thread/${this.$route.params.threadId}/${this.userId}`, {headers: {token: this.jwt}})
+          .then(serverRes => {
+            // console.log(serverRes)
+            this.getThread()
+          })
+        return console.log('already voted')
+      }
+
+      this.baseAxios.post(`vote/thread/${this.$route.params.threadId}/${this.userId}/0`, {}, {headers: {token: this.jwt}})
+        .then(serverRes => {
+          // console.log(serverRes)
+          this.getThread()
+        })
+    },
+    voteUpAnswer (answer) {
+      let answerId = answer._id
+      let votes = answer.answerVoteId
+      // let answerIndex = this.answers.findIndex(answer => answer._id === answerId)
+      // console.log(this.answers[answerIndex].answerVoteId)
+      // let answerVoteIndex = this.answers[answerIndex].answerVoteId.findIndex(vote => vote.userId === this.userId)
+      // console.log(answerVoteIndex)
+      if (this.jwt === '') {
+        return console.log('please log in')
+      }
+      let ownVote = votes.filter(vote => vote.userId === this.userId)
+
+      if (ownVote.length > 0) {
+        this.baseAxios.delete(`vote/answer/${answerId}/${this.userId}`, {headers: {token: this.jwt}})
+          .then(serverRes => {
+            // console.log(serverRes)
+            this.getAnswer()
+            // this.answers[idx] = serverRes
+            // this.answers[answerIndex].answerVoteId.splice(answerVoteIndex, 1, serverRes.data.threadVote)
+          })
+        return console.log('already voted')
+      }
+
+      this.baseAxios.post(`vote/answer/${answerId}/${this.userId}/1`, {}, {headers: {token: this.jwt}})
+        .then(serverRes => {
+          // console.log(serverRes)
+          this.getAnswer()
+        })
+    },
+    voteDownAnswer (answer) {
+      let answerId = answer._id
+      let votes = answer.answerVoteId
+      if (this.jwt === '') {
+        return console.log('please log in')
+      }
+      let ownVote = votes.filter(vote => vote.userId === this.userId)
+
+      if (ownVote.length > 0) {
+        this.baseAxios.delete(`vote/answer/${answerId}/${this.userId}`, {headers: {token: this.jwt}})
+          .then(serverRes => {
+            // console.log(serverRes)
+            this.getAnswer()
+          })
+        return console.log('already voted')
+      }
+
+      this.baseAxios.post(`vote/answer/${answerId}/${this.userId}/0`, {}, {headers: {token: this.jwt}})
+        .then(serverRes => {
+          // console.log(serverRes)
+          this.getAnswer()
         })
     }
   }
@@ -167,5 +275,8 @@ export default {
   padding: 15px;
   border: 2px solid #119fb5;
   border-radius: 5px;
+}
+.form-padding {
+  margin: 1.5em 25px;
 }
 </style>

@@ -1,10 +1,19 @@
 const ThreadVote = require('../models/threadVote.js')
 const AnswerVote = require('../models/answerVote.js')
+const Answer = require('../models/answer.js')
+const Thread = require('../models/thread.js')
+const User = require('../models/user.js')
 
 module.exports = {
 
   threadVote (req, res) {
-    let val = req.params.voteVal
+    let val
+    if (Number(req.params.voteVal) === 1) {
+      val = 1
+    } else if (Number(req.params.voteVal) === 0) {
+      val = -1
+    }
+    // console.log(val);
     let threadId = req.params.threadId
     let userId = req.params.userId
 
@@ -14,17 +23,32 @@ module.exports = {
       threadId: threadId
     })
 
-    newThreadVote.save((err, createdThreadVote) => {
-      if (err) {
-        return res.status(500).json({
-          message: "ThreadVote failed to be created"
+    User.findOne({_id: userId})
+      .then(foundUser => {
+        foundUser.threadVoteId.push(newThreadVote._id)
+        foundUser.save((err, updatedUser) => {
+          Thread.findOne({_id: threadId})
+            .then(foundThread => {
+              foundThread.threadVoteId.push(newThreadVote._id)
+              foundThread.save((err, updatedThread) => {
+
+                newThreadVote.save((err, createdThreadVote) => {
+                  if (err) {
+                    return res.status(500).json({
+                      message: "ThreadVote failed to be created"
+                    })
+                  }
+                  return res.status(200).json({
+                    message: 'ThreadVote Successfully Created',
+                    threadVote: createdThreadVote
+                  })
+                })
+              })
+            })
         })
-      }
-      return res.status(200).json({
-        message: 'ThreadVote Successfully Created',
-        threadVote: createdThreadVote
       })
-    })
+
+
   },
 
   getThreadVote (req, res) {
@@ -51,21 +75,32 @@ module.exports = {
       threadId: threadId
     }).exec()
       .then(foundThreadVote => {
+
         if (!foundThreadVote) {
           res.status(200).json({
             message: 'Vote was already deleted'
           })
         } else {
-          foundThreadVote.remove()
-            .then(removedVote => {
-              res.status(200).json({
-                message: 'Successfully deleted Vote',
-                vote: removedVote
-              })
-            }).catch(err => {
-              res.status(500).json({
-                message: 'Something went wrong'
-              })
+          let voteId = foundThreadVote._id
+          Thread.findByIdAndUpdate(threadId, {$pull: {threadVoteId: voteId}})
+            .exec()
+            .then(updatedThread => {
+              User.findByIdAndUpdate(userId, {$pull: {threadVoteId: voteId}})
+                .exec()
+                .then(updatedUser => {
+
+                  foundThreadVote.remove()
+                    .then(removedVote => {
+                      res.status(200).json({
+                        message: 'Successfully deleted Vote',
+                        vote: removedVote
+                      })
+                    }).catch(err => {
+                      res.status(500).json({
+                        message: 'Something went wrong'
+                      })
+                    })
+                })
             })
         }
       }).catch(err => {
@@ -76,7 +111,12 @@ module.exports = {
   },
   // =========== answer votes ===============
   AnswerVote (req, res) {
-    let val = req.params.voteVal
+    let val
+    if (Number(req.params.voteVal) === 1) {
+      val = 1
+    } else if (Number(req.params.voteVal) === 0) {
+      val = -1
+    }
     let answerId = req.params.answerId
     let userId = req.params.userId
 
@@ -86,17 +126,30 @@ module.exports = {
       answerId: answerId
     })
 
-    newAnswerVote.save((err, createdAnswerVote) => {
-      if (err) {
-        return res.status(500).json({
-          message: "AnswerVote failed to be created"
+    User.findOne({_id: userId})
+      .then(foundUser => {
+        foundUser.answerVoteId.push(newAnswerVote._id)
+        foundUser.save((err, updatedUser) => {
+          Answer.findOne({_id: answerId})
+            .then(foundAnswer => {
+              foundAnswer.answerVoteId.push(newAnswerVote._id)
+              foundAnswer.save((err, updatedThread) => {
+
+                newAnswerVote.save((err, createdThreadVote) => {
+                  if (err) {
+                    return res.status(500).json({
+                      message: "ThreadVote failed to be created"
+                    })
+                  }
+                  return res.status(200).json({
+                    message: 'ThreadVote Successfully Created',
+                    threadVote: createdThreadVote
+                  })
+                })
+              })
+            })
         })
-      }
-      return res.status(200).json({
-        message: 'AnswerVote Successfully Created',
-        answerVote: createdAnswerVote
       })
-    })
   },
 
   getAnswerVote (req, res) {
@@ -128,16 +181,26 @@ module.exports = {
             message: 'Vote was already deleted'
           })
         } else {
-          foundAnswerVote.remove()
-            .then(removedVote => {
-              res.status(200).json({
-                message: 'Successfully deleted Vote',
-                vote: removedVote
-              })
-            }).catch(err => {
-              res.status(500).json({
-                message: 'Something went wrong'
-              })
+          let voteId = foundAnswerVote._id
+          Answer.findByIdAndUpdate(answerId, {$pull: {answerVoteId: voteId}})
+            .exec()
+            .then(updatedThread => {
+              User.findByIdAndUpdate(userId, {$pull: {answerVoteId: voteId}})
+                .exec()
+                .then(updatedUser => {
+
+                  foundAnswerVote.remove()
+                    .then(removedVote => {
+                      res.status(200).json({
+                        message: 'Successfully deleted Vote',
+                        vote: removedVote
+                      })
+                    }).catch(err => {
+                      res.status(500).json({
+                        message: 'Something went wrong'
+                      })
+                    })
+                })
             })
         }
       }).catch(err => {

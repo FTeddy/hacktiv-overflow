@@ -1,16 +1,15 @@
 <template lang="html">
   <div class="section">
     <div class="container">
+      <!-- questions -->
       <div class="thread-short" v-for="(thread, index) in threads" :key="index">
         <article class="media">
           <figure class="media-left has-text-centered">
-            <a class="level-item">
-              <span class="icon is-small"><i class="fas fa-sort-up"></i></span>
-            </a>
-            {{thread.threadVoteId.length}}
-            <a class="level-item">
-              <span class="icon is-small"><i class="fas fa-sort-down"></i></span>
-            </a>
+            <p class="level-item"></p>
+            <p class="level-item">
+              {{thread.threadVoteId.length}}
+            </p>
+            <p class="level-item">Votes</p>
           </figure>
           <div class="media-content is-vertical-center">
             <div class="content">
