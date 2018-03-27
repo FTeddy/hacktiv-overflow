@@ -102,6 +102,8 @@ export default {
           console.log(serverRes)
           const cred = serverRes.data
           this.$store.dispatch('loginCredAct', cred)
+          this.localStorage.setItem('jwttoken', cred.token)
+          this.localStorage.setItem('userId', cred.userId)
           this.resetFields()
         })
     },
