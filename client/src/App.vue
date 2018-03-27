@@ -1,17 +1,22 @@
 <template>
   <div id="app">
-    <header>
-      <span>Vue.js PWA</span>
-    </header>
+    <Navbar></Navbar>
     <main>
       <router-view></router-view>
     </main>
+    <Footer></Footer>
   </div>
 </template>
 
 <script>
+import Navbar from '@/components/utils/Navbar'
+import Footer from '@/components/utils/Footer'
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    Navbar,
+    Footer
+  }
 }
 </script>
 

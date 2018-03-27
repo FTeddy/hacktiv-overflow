@@ -1,0 +1,120 @@
+<template lang="html">
+  <div class="section">
+    <div class="container">
+      <div class="thread-short" v-for="(thread, index) in threads" :key="index">
+        <article class="media">
+          <figure class="media-left has-text-centered">
+            <a class="level-item">
+              <span class="icon is-small"><i class="fas fa-sort-up"></i></span>
+            </a>
+            {{thread.threadVoteId.length}}
+            <a class="level-item">
+              <span class="icon is-small"><i class="fas fa-sort-down"></i></span>
+            </a>
+          </figure>
+          <div class="media-content is-vertical-center">
+            <div class="content">
+              <p>
+                <strong>
+                  <router-link :to="{ name: 'Thread', params: {threadId: thread._id} }" class="navbar-item">
+                    {{thread.question}}
+                  </router-link>
+                </strong>
+              </p>
+            </div>
+
+          </div>
+          <div class="media-right">
+              <div class="level-item">
+                {{thread.answerId.length}}
+              </div>
+              <div class="level-item">
+                <p>Answers</p>
+              </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="mb-1">
+
+    </div>
+    <div class="container">
+      <div class="form-center">
+        <div class="field">
+          <label class="label">Question</label>
+          <input v-model="newData.question" class="input" type="text" placeholder="Ask away!">
+        </div>
+        <div class="field">
+          <label class="label">Description</label>
+          <textarea v-model="newData.desc" class="textarea" placeholder="Describe your problem..."></textarea>
+        </div>
+        <div class="field is-grouped is-grouped-right">
+          <p class="control">
+            <a class="button is-primary" v-on:click="newThread">
+              Submit
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {mapState} from 'vuex'
+export default {
+  name: 'ThreadsList',
+  data () {
+    return {
+      newData: {
+        question: '',
+        desc: ''
+      },
+      threads: ''
+    }
+  },
+  created () {
+    this.getThreads()
+  },
+  computed: {
+    ...mapState([
+      'jwt', 'userId'
+    ])
+  },
+  methods: {
+    newThread () {
+      this.baseAxios.post(`thread/new/${this.userId}`, this.newData, {headers: {token: this.jwt}})
+        .then(serverRes => {
+          console.log(serverRes)
+        })
+    },
+    getThreads () {
+      this.baseAxios.get('thread/')
+        .then(serverRes => {
+          this.threads = serverRes.data.threads
+        })
+    },
+    setCurrent (data) {
+      this.$store.dispatch('threadCurrentAct', data)
+    }
+  }
+}
+</script>
+
+<style lang="css">
+.mb-1 {
+  margin-bottom: 1em;
+}
+.form-center {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.thread-short {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.is-vertical-center {
+  height: 100%;
+  margin: auto 0;
+}
+</style>

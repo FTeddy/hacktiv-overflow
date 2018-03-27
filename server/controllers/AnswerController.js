@@ -1,4 +1,6 @@
 const Answer = require('../models/answer.js')
+const Thread = require('../models/thread.js')
+const User = require('../models/user.js');
 
 module.exports = {
 
@@ -9,22 +11,48 @@ module.exports = {
       threadId: req.params.threadId
     })
 
-    newAnswer.save((err, createdAnswer) => {
-      if (err) {
-        return res.status(500).json({
-          message: "Answer failed to be created"
+    Thread.findOne({_id: req.params.threadId})
+      .then(foundThread => {
+        foundThread.answerId.push(newAnswer._id)
+        foundThread.save((err, updatedThread) => {
+          if (err) {
+            return res.status(500).json({
+              message: "Thread failed to be created"
+            })
+          }
+
+          User.findOne({_id: req.params.userId})
+            .then(foundUser => {
+              foundUser.answerId.push(newAnswer._id)
+              foundUser.save((err,updatedUser) => {
+                if (err) {
+                  return res.status(500).json({
+                    message: "Thread failed to be created"
+                  })
+                }
+
+                newAnswer.save((err, createdAnswer) => {
+                  if (err) {
+                    return res.status(500).json({
+                      message: "Answer failed to be created"
+                    })
+                  }
+                  return res.status(200).json({
+                    message: 'Answer Successfully Created',
+                    answer: createdAnswer
+                  })
+                })
+              })
+            })
         })
-      }
-      return res.status(200).json({
-        message: 'Answer Successfully Created',
-        answer: createdAnswer
       })
-    })
   },
 
   getAnswer (req, res) {
     let threadId = req.params.threadId
     Answer.find({threadId: threadId})
+      .populate('userId')
+      .populate('answerVoteId')
       .limit(50)
       .exec()
       .then(foundAnswers => {

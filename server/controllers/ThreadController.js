@@ -24,6 +24,7 @@ module.exports = {
 
   getThread (req, res) {
     Thread.find()
+      .populate('userId', 'name')
       .limit(50)
       .exec()
       .then(foundThreads => {
@@ -32,6 +33,26 @@ module.exports = {
           threads: foundThreads
         })
       }).catch(err => {
+        res.status(500).json({
+          message: 'Something went wrong'
+        })
+      })
+  },
+
+  getOneThread (req, res) {
+    console.log(req.params.threadId);
+    Thread.findOne({_id: req.params.threadId})
+      .populate('userId')
+      .populate('answerId')
+      .populate('threadVoteId')
+      .exec()
+      .then(foundThread => {
+        res.status(200).json({
+          message: 'Found all threads.',
+          thread: foundThread
+        })
+      }).catch(err => {
+        console.log(err);
         res.status(500).json({
           message: 'Something went wrong'
         })

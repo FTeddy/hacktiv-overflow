@@ -13,4 +13,4 @@ var threadVoteSchema = new Schema({
     },
 }, {timestamps: true})
 
-module.exports = mongoose.model('threadVote',threadVoteSchema)
+module.exports = mongoose.model('ThreadVote',threadVoteSchema)
