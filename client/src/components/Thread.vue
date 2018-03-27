@@ -105,6 +105,7 @@ export default {
   created () {
     this.getThread()
     this.getAnswer()
+    this.localData()
   },
   computed: {
     ...mapState([
@@ -119,6 +120,16 @@ export default {
     }
   },
   methods: {
+    localData () {
+      if (localStorage.getItem('jwttoken') === null) {
+        return
+      }
+      let cred = {
+        token: localStorage.getItem('jwttoken'),
+        userId: localStorage.getItem('userId')
+      }
+      this.$store.dispatch('loginCredAct', cred)
+    },
     voteAnswer (answer) {
       let total = 0
       answer.answerVoteId.forEach(vote => {
@@ -143,6 +154,9 @@ export default {
         })
     },
     newAnswer () {
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      }
       let answerData = {
         answer: this.newPost.answer
       }
@@ -153,6 +167,9 @@ export default {
         })
     },
     voteUpThread (votes) {
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      }
       if (this.jwt === '') {
         return console.log('please log in')
       }
@@ -176,6 +193,9 @@ export default {
         })
     },
     voteDownThread (votes) {
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      }
       if (this.jwt === '') {
         return console.log('please log in')
       }
@@ -197,6 +217,9 @@ export default {
         })
     },
     voteUpAnswer (answer) {
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      }
       let answerId = answer._id
       let votes = answer.answerVoteId
       // let answerIndex = this.answers.findIndex(answer => answer._id === answerId)
@@ -226,6 +249,9 @@ export default {
         })
     },
     voteDownAnswer (answer) {
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      }
       let answerId = answer._id
       let votes = answer.answerVoteId
       if (this.jwt === '') {

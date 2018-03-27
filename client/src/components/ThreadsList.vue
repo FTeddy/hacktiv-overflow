@@ -75,6 +75,7 @@ export default {
   },
   created () {
     this.getThreads()
+    this.localData()
   },
   computed: {
     ...mapState([
@@ -82,11 +83,26 @@ export default {
     ])
   },
   methods: {
+    localData () {
+      if (localStorage.getItem('jwttoken') === null) {
+        return
+      }
+      let cred = {
+        token: localStorage.getItem('jwttoken'),
+        userId: localStorage.getItem('userId')
+      }
+      this.$store.dispatch('loginCredAct', cred)
+    },
     newThread () {
-      this.baseAxios.post(`thread/new/${this.userId}`, this.newData, {headers: {token: this.jwt}})
-        .then(serverRes => {
-          console.log(serverRes)
-        })
+      if (!localStorage.getItem('jwttoken')) {
+        return this.$router.push({ path: `/` })
+      } else {
+        this.baseAxios.post(`thread/new/${this.userId}`, this.newData, {headers: {token: this.jwt}})
+          .then(serverRes => {
+            console.log(serverRes)
+            this.getThreads()
+          })
+      }
     },
     getThreads () {
       this.baseAxios.get('thread/')

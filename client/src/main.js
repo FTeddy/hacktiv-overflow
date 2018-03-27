@@ -7,9 +7,10 @@ import axios from 'axios'
 import store from './store/index.js'
 
 Vue.config.productionTip = false
-let localhost = 'http://localhost:3000/'
+// let localhost = 'http://localhost:3000/'
+let deploy = 'https://overflow-server.teddydevstack.com/'
 Vue.prototype.baseAxios = axios.create({
-  baseURL: localhost
+  baseURL: deploy
 })
 
 /* eslint-disable no-new */

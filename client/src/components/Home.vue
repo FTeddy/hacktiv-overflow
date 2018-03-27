@@ -89,7 +89,20 @@ export default {
       'jwt', 'userId'
     ])
   },
+  created () {
+    this.localData()
+  },
   methods: {
+    localData () {
+      if (localStorage.getItem('jwttoken') === null) {
+        return
+      }
+      let cred = {
+        token: localStorage.getItem('jwttoken'),
+        userId: localStorage.getItem('userId')
+      }
+      this.$store.dispatch('loginCredAct', cred)
+    },
     postModal () {
       this.registerClass = 'modal is-active'
     },
@@ -99,11 +112,11 @@ export default {
     login () {
       this.baseAxios.post('users/signin', this.loginData)
         .then(serverRes => {
-          console.log(serverRes)
+          // console.log(serverRes)
           const cred = serverRes.data
           this.$store.dispatch('loginCredAct', cred)
-          this.localStorage.setItem('jwttoken', cred.token)
-          this.localStorage.setItem('userId', cred.userId)
+          localStorage.setItem('jwttoken', cred.token)
+          localStorage.setItem('userId', cred.userId)
           this.resetFields()
         })
     },
@@ -113,6 +126,8 @@ export default {
         userId: ''
       }
       this.$store.dispatch('loginCredAct', cred)
+      localStorage.removeItem('jwttoken')
+      localStorage.removeItem('userId')
       this.resetFields()
     },
     submitRegist (payload) {
